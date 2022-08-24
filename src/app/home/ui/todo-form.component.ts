@@ -7,19 +7,36 @@ import { Todo } from '../../shared/interfaces/todo';
   selector: 'app-todo-form',
   template: `
     <form [formGroup]="todoForm" (ngSubmit)="handleSubmit()">
-      <ion-input
-        type="text"
-        formControlName="title"
-        placeholder="title..."
-      ></ion-input>
-      <ion-input
-        type="text"
-        formControlName="description"
-        placeholder="description..."
-      ></ion-input>
-      <ion-button type="submit">Add Todo</ion-button>
+      <ion-card>
+        <ion-card-title>
+          <ion-input
+            type="text"
+            formControlName="title"
+            placeholder="title..."
+          ></ion-input>
+        </ion-card-title>
+        <ion-card-content>
+          <ion-input
+            type="text"
+            formControlName="description"
+            placeholder="description..."
+          ></ion-input>
+          <ion-button expand="full" type="submit">Add Todo</ion-button>
+        </ion-card-content>
+      </ion-card>
     </form>
   `,
+  styles: [
+    `
+      ion-card-title {
+        padding-left: 20px;
+      }
+
+      ion-card-content {
+        padding-top: 0;
+      }
+    `,
+  ],
 })
 export class TodoFormComponent {
   @Output() todoSubmitted = new EventEmitter<Todo>();
@@ -32,8 +49,16 @@ export class TodoFormComponent {
   constructor(private fb: FormBuilder) {}
 
   handleSubmit() {
-    if (this.todoForm.valid) {
-      this.todoSubmitted.emit(this.todoForm.value as Todo);
+    const value = this.todoForm.value;
+
+    if (this.todoForm.valid && value.title && value.description) {
+      const todo: Todo = {
+        id: Date.now().toString(),
+        title: value.title,
+        description: value.description,
+      };
+
+      this.todoSubmitted.emit(todo);
     }
   }
 }
